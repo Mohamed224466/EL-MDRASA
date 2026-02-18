@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تحدي اللغز الذكي</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root { 
+            --instapay-green: #00d26a; 
+            --dark-overlay: rgba(10, 15, 25, 0.82);
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Cairo', sans-serif;
+            /* هنا تم وضع اسم صورتك لتظهر كخلفية */
+            background-image: url('EL MADRASA.JPG'); 
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--dark-overlay);
+            z-index: -1;
+        }
+
+        /* تم تصغير الـ max-width والـ padding لجعل الكارت أصغر */
+        .container {
+            width: 80%;
+            max-width: 360px; 
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            padding: 30px 25px;
+            border-radius: 28px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+            text-align: center;
+        }
+
+        h2 { font-weight: 700; margin-bottom: 20px; font-size: 1.3rem; color: #fff; }
+
+        .form-group { text-align: right; margin-bottom: 15px; }
+        
+        input, select {
+            width: 100%;
+            padding: 12px 15px;
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.1);
+            background: rgba(0, 0, 0, 0.4);
+            color: white;
+            font-family: 'Cairo';
+            font-size: 0.95rem;
+            outline: none;
+            box-sizing: border-box;
+            transition: 0.3s;
+        }
+
+        .anon-box {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 8px;
+            color: #94a3b8;
+            font-size: 0.85rem;
+            cursor: pointer;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            border-radius: 15px;
+            border: none;
+            background: var(--instapay-green);
+            color: white;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: 0.3s;
+            margin-top: 10px;
+        }
+
+        .btn:active { transform: scale(0.96); }
+
+        #quiz-ui, #success-ui { display: none; }
+        
+        .riddle-box { font-size: 1.1rem; margin-bottom: 20px; line-height: 1.5; font-weight: 400; }
+
+        .opt {
+            background: rgba(255, 255, 255, 0.06);
+            padding: 12px 15px;
+            border-radius: 12px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            text-align: right;
+            font-size: 0.95rem;
+            transition: 0.2s;
+        }
+
+        .opt.selected {
+            border-color: var(--instapay-green);
+            background: rgba(0, 210, 106, 0.12);
+        }
+
+        /* علامة إنستا باي المصغرة */
+        .check-container {
+            width: 70px;
+            height: 70px;
+            background: var(--instapay-green);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            box-shadow: 0 8px 20px rgba(0, 210, 106, 0.3);
+            animation: bounceIn 0.5s ease;
+        }
+
+        .check-container svg { width: 40px; fill: white; }
+
+        @keyframes bounceIn {
+            0% { transform: scale(0.5); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="overlay"></div>
+
+<div class="container">
+    <div id="login-ui">
+        <h2>تحدي اليوم 🧩</h2>
+        <div class="form-group">
+            <input type="text" id="u-name" placeholder="الاسم الرباعي">
+            <div class="anon-box" onclick="toggleAnon()">
+                <input type="checkbox" id="anon-check" style="width: auto;">
+                <span>مجهول الهوية 👤</span>
+            </div>
+        </div>
+        <div class="form-group">
+            <select id="u-class">
+                <option value="1/1">فصل 1/1</option>
+                <option value="1/2">فصل 1/2</option>
+                <option value="1/3">فصل 1/3</option>
+                <option value="مش طالب">زائر (مش طالب)</option>
+            </select>
+        </div>
+        <button class="btn" onclick="start()">دخول</button>
+    </div>
+
+    <div id="quiz-ui">
+        <div class="riddle-box">"ما هو الشيء الذي يمشي بلا أرجل ويبكي بلا أعين؟"</div>
+        <div class="opt" onclick="select(0, this)">البحر</div>
+        <div class="opt" onclick="select(1, this)">السحاب</div>
+        <div class="opt" onclick="select(2, this)">الساعة</div>
+        <button class="btn" onclick="submit()">تم</button>
+    </div>
+
+    <div id="success-ui">
+        <div class="check-container">
+            <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>
+        </div>
+        <h2 style="margin-bottom: 5px;">تم</h2>
+        <p style="color: #94a3b8; font-size: 0.9rem; margin-bottom: 20px;">شكراً لمشاركتك معنا</p>
+        <button class="btn" onclick="location.reload()" style="background: rgba(255,255,255,0.1); color: white; font-size: 0.9rem; padding: 10px;">رجوع</button>
+    </div>
+</div>
+
+<script>
+    // بيانات الربط بجوجل شيت
+    const FORM_URL = "https://docs.google.com/forms/d/e/YOUR_ID/formResponse";
+    const E_NAME = "entry.11111";
+    const E_CLASS = "entry.22222";
+    const E_SCORE = "entry.33333";
+
+    let choice = null;
+    let scoreText = "";
+
+    function toggleAnon() {
+        const isAnon = document.getElementById('anon-check').checked;
+        const input = document.getElementById('u-name');
+        input.disabled = isAnon;
+        input.value = isAnon ? "مجهول الهوية" : "";
+    }
+
+    function start() {
+        if(!document.getElementById('u-name').value && !document.getElementById('anon-check').checked) {
+            return alert("يرجى كتابة الاسم");
+        }
+        document.getElementById('login-ui').style.display = 'none';
+        document.getElementById('quiz-ui').style.display = 'block';
+    }
+
+    function select(idx, el) {
+        choice = idx;
+        document.querySelectorAll('.opt').forEach(o => o.classList.remove('selected'));
+        el.classList.add('selected');
+        scoreText = (idx === 1) ? "صح ✅" : "خطأ ❌";
+    }
+
+    function submit() {
+        if(choice === null) return alert("اختر إجابة");
+        const fd = new FormData();
+        fd.append(E_NAME, document.getElementById('u-name').value || "مجهول");
+        fd.append(E_CLASS, document.getElementById('u-class').value);
+        fd.append(E_SCORE, scoreText);
+        fetch(FORM_URL, { method: 'POST', mode: 'no-cors', body: fd });
+        document.getElementById('quiz-ui').style.display = 'none';
+        document.getElementById('success-ui').style.display = 'block';
+    }
+</script>
+</body>
+</html>
